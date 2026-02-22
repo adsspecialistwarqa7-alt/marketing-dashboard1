@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tag Dashboard</title>
+<title>Marketing Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -27,6 +27,9 @@ body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif
 .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; padding-bottom:18px; border-bottom:1px solid var(--border); }
 .header h1 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; }
 .header h1 span { color:var(--social); }
+.header-right { display:flex; align-items:center; gap:14px; }
+.save-indicator { font-size:11px; color:var(--done); opacity:0; transition:opacity .4s; }
+.save-indicator.show { opacity:1; }
 
 /* CONTRACT CARDS */
 .dates-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
@@ -85,7 +88,6 @@ tbody td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-ali
 tbody td:first-child { text-align:left; font-weight:600; font-size:11px; color:var(--muted); white-space:nowrap; }
 tbody tr:last-child td { border-bottom:none; }
 
-/* Status */
 .status-sel {
   padding:3px 8px; border-radius:20px; font-size:10px; font-weight:700;
   border:none; outline:none; cursor:pointer; font-family:'DM Sans',sans-serif;
@@ -95,7 +97,6 @@ tbody tr:last-child td { border-bottom:none; }
 .status-sel.hold    { background:rgba(245,158,11,.18);  color:#fbbf24; }
 .status-sel.pending { background:rgba(100,116,139,.15); color:#94a3b8; }
 
-/* Deadline */
 .dl-input {
   background:var(--surface2); border:1px solid var(--border); border-radius:6px;
   color:var(--text); font-family:'DM Sans',sans-serif; font-size:10px;
@@ -103,13 +104,11 @@ tbody tr:last-child td { border-bottom:none; }
 }
 .dl-input:focus { border-color:var(--media); }
 
-/* Progress */
 .prog-wrap { display:flex; align-items:center; gap:8px; }
 .prog-bar { flex:1; height:5px; background:var(--surface2); border-radius:4px; overflow:hidden; }
 .prog-fill { height:100%; border-radius:4px; transition:width 1s ease; }
 .prog-label { font-size:11px; font-weight:700; width:30px; }
 
-/* Report checkbox */
 .report-check { display:flex; flex-direction:column; align-items:center; gap:3px; }
 .report-check label { font-size:9px; color:var(--muted); }
 .chk {
@@ -119,7 +118,6 @@ tbody tr:last-child td { border-bottom:none; }
 .chk:checked { background:var(--done); border-color:var(--done); }
 .chk:checked::after { content:'✓'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#fff; font-size:12px; font-weight:800; }
 
-/* Inline input */
 .inline-input {
   background:transparent; border:none; outline:none; color:var(--text);
   font-family:'DM Sans',sans-serif; font-size:11px; width:100%;
@@ -139,6 +137,43 @@ tbody tr:last-child td { border-bottom:none; }
 .chart-wrap { position:relative; height:185px; }
 .chart-wrap-tall { position:relative; height:245px; }
 
+/* EXPORT PDF BUTTON */
+.export-section { margin-top:32px; padding-top:24px; border-top:1px solid var(--border); display:flex; justify-content:center; gap:12px; }
+.btn-export {
+  display:inline-flex; align-items:center; gap:8px;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  color:#fff; border:none; border-radius:12px; padding:14px 32px;
+  font-family:'Syne',sans-serif; font-size:15px; font-weight:700;
+  cursor:pointer; transition:transform .2s, box-shadow .2s;
+  box-shadow:0 4px 20px rgba(59,130,246,.35);
+}
+.btn-export:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(59,130,246,.5); }
+.btn-reset {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.3);
+  border-radius:12px; padding:14px 24px;
+  font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+  cursor:pointer; transition:all .2s;
+}
+.btn-reset:hover { background:rgba(239,68,68,.25); }
+
+/* PRINT STYLES */
+@media print {
+  body { background:#fff !important; color:#000 !important; padding:16px; }
+  .header { border-bottom:2px solid #ddd; }
+  .header h1, .header h1 span { color:#000 !important; }
+  .btn-export, .btn-reset, .export-section { display:none !important; }
+  .date-card, .overall-card, .section-card, .chart-card {
+    background:#f8f9fa !important; border:1px solid #ddd !important;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    break-inside:avoid;
+  }
+  .status-sel { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .charts-grid, .charts-grid-2 { break-inside:avoid; }
+  .save-indicator { display:none; }
+  canvas { max-width:100%; }
+}
+
 .fade-in { animation:fadeUp .5s ease both; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 @media(max-width:900px){ .dates-row,.overall-row,.charts-grid,.charts-grid-2{grid-template-columns:1fr;} }
@@ -147,48 +182,51 @@ tbody tr:last-child td { border-bottom:none; }
 <body>
 
 <div class="header fade-in">
-  <h1>Tag <span>Dashboard</span></h1>
-  <div style="font-size:12px;color:var(--muted)">Updated: <span id="lastUpdate"></span></div>
+  <h1>Marketing <span>Dashboard</span></h1>
+  <div class="header-right">
+    <span class="save-indicator" id="saveIndicator">✓ Saved</span>
+    <div style="font-size:12px;color:var(--muted)">Updated: <span id="lastUpdate"></span></div>
+  </div>
 </div>
 
 <!-- CONTRACT CARDS -->
 <div class="dates-row fade-in" style="animation-delay:.1s">
   <div class="date-card contract">
     <div class="card-label">Contract</div>
-    <input class="card-name-input" placeholder="اسم العقد..." value="3 Month (1 Full - 2 Media)"/>
+    <input class="card-name-input" id="con-name" placeholder="اسم العقد..." value="3 Month (1 Full - 2 Media)" oninput="saveAll()"/>
     <div class="date-fields">
-      <div class="date-field"><label>Start</label><input type="date" id="con-start" value="2026-01-02" onchange="calcDays('con','con-days','con-sub')"/></div>
-      <div class="date-field"><label>End</label><input type="date" id="con-end" value="2026-03-01" onchange="calcDays('con','con-days','con-sub')"/></div>
+      <div class="date-field"><label>Start</label><input type="date" id="con-start" value="2026-01-02" onchange="calcDays('con','con-days','con-sub');saveAll()"/></div>
+      <div class="date-field"><label>End</label><input type="date" id="con-end" value="2026-03-01" onchange="calcDays('con','con-days','con-sub');saveAll()"/></div>
     </div>
     <div class="days-display neg" id="con-days">-11</div>
     <div class="days-sub" id="con-sub">days remaining</div>
   </div>
   <div class="date-card social">
     <div class="card-label">Social Media</div>
-    <input class="card-name-input" placeholder="اسم الكمبين..." value="Campaign Period"/>
+    <input class="card-name-input" id="sm-name" placeholder="اسم الكمبين..." value="Campaign Period" oninput="saveAll()"/>
     <div class="date-fields">
-      <div class="date-field"><label>Start</label><input type="date" id="sm-start" value="2026-01-01" onchange="calcDays('sm','sm-days','sm-sub')"/></div>
-      <div class="date-field"><label>End</label><input type="date" id="sm-end" value="2026-03-01" onchange="calcDays('sm','sm-days','sm-sub')"/></div>
+      <div class="date-field"><label>Start</label><input type="date" id="sm-start" value="2026-01-01" onchange="calcDays('sm','sm-days','sm-sub');saveAll()"/></div>
+      <div class="date-field"><label>End</label><input type="date" id="sm-end" value="2026-03-01" onchange="calcDays('sm','sm-days','sm-sub');saveAll()"/></div>
     </div>
     <div class="days-display pos" id="sm-days">48</div>
     <div class="days-sub" id="sm-sub">days total</div>
   </div>
   <div class="date-card media">
     <div class="card-label">Media Buying</div>
-    <input class="card-name-input" placeholder="اسم الكمبين..." value="Campaign Period"/>
+    <input class="card-name-input" id="mb-name" placeholder="اسم الكمبين..." value="Campaign Period" oninput="saveAll()"/>
     <div class="date-fields">
-      <div class="date-field"><label>Start</label><input type="date" id="mb-start" value="2026-01-01" onchange="calcDays('mb','mb-days','mb-sub')"/></div>
-      <div class="date-field"><label>End</label><input type="date" id="mb-end" value="2026-03-01" onchange="calcDays('mb','mb-days','mb-sub')"/></div>
+      <div class="date-field"><label>Start</label><input type="date" id="mb-start" value="2026-01-01" onchange="calcDays('mb','mb-days','mb-sub');saveAll()"/></div>
+      <div class="date-field"><label>End</label><input type="date" id="mb-end" value="2026-03-01" onchange="calcDays('mb','mb-days','mb-sub');saveAll()"/></div>
     </div>
     <div class="days-display pos" id="mb-days">48</div>
     <div class="days-sub" id="mb-sub">days total</div>
   </div>
   <div class="date-card seoc">
     <div class="card-label">SEO</div>
-    <input class="card-name-input" placeholder="اسم الكمبين..." value="Campaign Period"/>
+    <input class="card-name-input" id="seo-name" placeholder="اسم الكمبين..." value="Campaign Period" oninput="saveAll()"/>
     <div class="date-fields">
-      <div class="date-field"><label>Start</label><input type="date" id="seo-start" value="2026-01-01" onchange="calcDays('seo','seo-days','seo-sub')"/></div>
-      <div class="date-field"><label>End</label><input type="date" id="seo-end" value="2026-02-01" onchange="calcDays('seo','seo-days','seo-sub')"/></div>
+      <div class="date-field"><label>Start</label><input type="date" id="seo-start" value="2026-01-01" onchange="calcDays('seo','seo-days','seo-sub');saveAll()"/></div>
+      <div class="date-field"><label>End</label><input type="date" id="seo-end" value="2026-02-01" onchange="calcDays('seo','seo-days','seo-sub');saveAll()"/></div>
     </div>
     <div class="days-display pos" id="seo-days">17</div>
     <div class="days-sub" id="seo-sub">days remaining</div>
@@ -234,36 +272,36 @@ tbody tr:last-child td { border-bottom:none; }
           <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
           <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
           <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
         </tr>
         <tr>
           <td>Deadline</td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
           <td colspan="4"></td>
         </tr>
         <tr>
           <td>Link</td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
           <td colspan="4"></td>
         </tr>
         <tr>
           <td>Note</td>
-          <td colspan="7"><input class="inline-input" placeholder="ملاحظة عامة..."/></td>
+          <td colspan="7"><input class="inline-input" placeholder="ملاحظة عامة..." oninput="saveAll()"/></td>
           <td colspan="4"></td>
         </tr>
         <tr>
@@ -300,38 +338,38 @@ tbody tr:last-child td { border-bottom:none; }
           <td><select class="status-sel pending" onchange="onStatus(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
           <td><select class="status-sel pending" onchange="onStatus(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
           <td><select class="status-sel pending" onchange="onStatus(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
         </tr>
         <tr>
           <td>Deadline</td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
           <td colspan="4"></td>
         </tr>
         <tr>
           <td>Link</td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" value="Marketing Plan"/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" value="Marketing Plan" oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
           <td colspan="4"></td>
         </tr>
         <tr>
           <td>Note</td>
-          <td colspan="8"><input class="inline-input" placeholder="ملاحظة عامة..." value="جديد"/></td>
+          <td colspan="8"><input class="inline-input" placeholder="ملاحظة عامة..." value="جديد" oninput="saveAll()"/></td>
           <td colspan="4"></td>
         </tr>
         <tr>
@@ -368,38 +406,38 @@ tbody tr:last-child td { border-bottom:none; }
           <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
           <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
           <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
         </tr>
         <tr>
           <td>Deadline</td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
-          <td><input type="date" class="dl-input"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
           <td colspan="4"></td>
         </tr>
         <tr>
           <td>Link</td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
-          <td><input class="inline-input" placeholder="رابط..."/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
           <td colspan="4"></td>
         </tr>
         <tr>
           <td>Note</td>
-          <td colspan="8"><input class="inline-input" placeholder="ملاحظة عامة..."/></td>
+          <td colspan="8"><input class="inline-input" placeholder="ملاحظة عامة..." oninput="saveAll()"/></td>
           <td colspan="4"></td>
         </tr>
         <tr>
@@ -441,14 +479,91 @@ tbody tr:last-child td { border-bottom:none; }
   </div>
 </div>
 
+<!-- EXPORT BUTTON -->
+<div class="export-section fade-in" style="animation-delay:.7s">
+  <button class="btn-reset" onclick="resetAll()">🗑 Reset Data</button>
+  <button class="btn-export" onclick="exportPDF()">📄 Export as PDF</button>
+</div>
+
 <script>
+// ══════════════════════════════════════════════
+// SAVE / LOAD  (localStorage)
+// ══════════════════════════════════════════════
+const SAVE_KEY = 'mkt_dashboard_v1';
+let saveTimer = null;
+
+function saveAll() {
+  // Collect all saveable elements with an id or data-idx
+  const data = {};
+
+  // Named inputs
+  ['con-name','sm-name','mb-name','seo-name',
+   'con-start','con-end','sm-start','sm-end',
+   'mb-start','mb-end','seo-start','seo-end'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) data[id] = el.value;
+  });
+
+  // All status selects, dl-inputs, inline-inputs, checkboxes
+  // Give each a unique index within its class
+  document.querySelectorAll('.status-sel').forEach((el,i) => data['sel_'+i] = el.value);
+  document.querySelectorAll('.dl-input').forEach((el,i) => data['dl_'+i] = el.value);
+  document.querySelectorAll('.inline-input').forEach((el,i) => data['inp_'+i] = el.value);
+  document.querySelectorAll('.chk').forEach((el,i) => data['chk_'+i] = el.checked);
+
+  localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+
+  // Show saved indicator
+  clearTimeout(saveTimer);
+  const ind = document.getElementById('saveIndicator');
+  ind.classList.add('show');
+  saveTimer = setTimeout(()=>ind.classList.remove('show'), 1500);
+}
+
+function loadAll() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if(!raw) return;
+  const data = JSON.parse(raw);
+
+  ['con-name','sm-name','mb-name','seo-name',
+   'con-start','con-end','sm-start','sm-end',
+   'mb-start','mb-end','seo-start','seo-end'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el && data[id] !== undefined) el.value = data[id];
+  });
+
+  document.querySelectorAll('.status-sel').forEach((el,i) => {
+    if(data['sel_'+i] !== undefined) {
+      el.value = data['sel_'+i];
+      el.className = 'status-sel ' + el.value;
+    }
+  });
+  document.querySelectorAll('.dl-input').forEach((el,i) => {
+    if(data['dl_'+i] !== undefined) el.value = data['dl_'+i];
+  });
+  document.querySelectorAll('.inline-input').forEach((el,i) => {
+    if(data['inp_'+i] !== undefined) el.value = data['inp_'+i];
+  });
+  document.querySelectorAll('.chk').forEach((el,i) => {
+    if(data['chk_'+i] !== undefined) el.checked = data['chk_'+i];
+  });
+}
+
+function resetAll() {
+  if(!confirm('هتمسح كل البيانات. متأكد؟')) return;
+  localStorage.removeItem(SAVE_KEY);
+  location.reload();
+}
+
+// ══════════════════════════════════════════════
+// DATES
+// ══════════════════════════════════════════════
 document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('en-GB');
 
-// ── DATES ──
 function calcDays(section, daysId, subId) {
   const s = document.getElementById(section+'-start');
   const e = document.getElementById(section+'-end');
-  if (!s||!e||!s.value||!e.value) return;
+  if(!s||!e||!s.value||!e.value) return;
   const today = new Date(); today.setHours(0,0,0,0);
   const end = new Date(e.value);
   const start = new Date(s.value);
@@ -460,16 +575,15 @@ function calcDays(section, daysId, subId) {
   const sub = document.getElementById(subId);
   if(sub) sub.textContent = 'Total: '+total+' days';
 }
-calcDays('con','con-days','con-sub');
-calcDays('sm','sm-days','sm-sub');
-calcDays('mb','mb-days','mb-sub');
-calcDays('seo','seo-days','seo-sub');
 
-// ── STATUS ──
+// ══════════════════════════════════════════════
+// STATUS & PROGRESS
+// ══════════════════════════════════════════════
 function onStatus(sel, section) {
   sel.className = 'status-sel ' + sel.value;
   recalc(section);
   updateCharts();
+  saveAll();
 }
 
 function recalc(sec) {
@@ -483,7 +597,9 @@ function recalc(sec) {
   document.getElementById(sec+'-bar').style.width=pct+'%';
 }
 
-// ── CHARTS ──
+// ══════════════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════════════
 Chart.defaults.color='#64748b';
 Chart.defaults.borderColor='#252a38';
 
@@ -545,6 +661,18 @@ function updateCharts(){
   barC.update();
 }
 
+// ══════════════════════════════════════════════
+// EXPORT PDF
+// ══════════════════════════════════════════════
+function exportPDF() {
+  window.print();
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+loadAll();
+['con','sm','mb','seo'].forEach(s => calcDays(s, s+'-days', s+'-sub'));
 ['sm','mb','seo'].forEach(recalc);
 updateCharts();
 </script>
