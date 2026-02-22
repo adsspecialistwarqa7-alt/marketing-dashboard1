@@ -3,678 +3,821 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marketing Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Marketing OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg: #0d0f14;
-  --surface: #13161d;
-  --surface2: #1a1e28;
-  --border: #252a38;
-  --social: #3b82f6;
-  --media: #f97316;
-  --seo: #10b981;
-  --text: #e2e8f0;
-  --muted: #64748b;
-  --done: #10b981;
-  --hold: #f59e0b;
-  --pending: #ef4444;
+  --bg:#0d0f14; --surface:#13161d; --surface2:#1a1e28; --border:#252a38;
+  --social:#3b82f6; --media:#f97316; --seo:#10b981;
+  --copy:#a855f7; --motion:#ec4899; --design:#06b6d4;
+  --text:#e2e8f0; --muted:#64748b;
+  --done:#10b981; --hold:#f59e0b; --pending:#ef4444;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; padding:24px; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
 
-.header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; padding-bottom:18px; border-bottom:1px solid var(--border); }
-.header h1 { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; }
-.header h1 span { color:var(--social); }
-.header-right { display:flex; align-items:center; gap:14px; }
-.save-indicator { font-size:11px; color:var(--done); opacity:0; transition:opacity .4s; }
-.save-indicator.show { opacity:1; }
+/* ═══ PAGE SYSTEM ═══ */
+.page{display:none;padding:28px;}
+.page.active{display:block;}
 
-/* CONTRACT CARDS */
-.dates-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
-.date-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 18px; position:relative; overflow:hidden; }
-.date-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
-.date-card.contract::before { background:#8b5cf6; }
-.date-card.social::before   { background:var(--social); }
-.date-card.media::before    { background:var(--media); }
-.date-card.seoc::before     { background:var(--seo); }
-.card-label { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:8px; }
-.card-name-input {
-  font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
-  background:transparent; border:none; outline:none; color:var(--text);
-  width:100%; margin-bottom:10px;
-  border-bottom:1px dashed var(--border); padding-bottom:4px;
-}
-.card-name-input:focus { border-bottom-color:var(--social); }
-.date-fields { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
-.date-field label { font-size:10px; color:var(--muted); display:block; margin-bottom:3px; }
-.date-field input[type="date"] {
-  background:var(--surface2); border:1px solid var(--border); border-radius:6px;
-  color:var(--text); font-family:'DM Sans',sans-serif; font-size:11px;
-  padding:4px 6px; width:100%; outline:none;
-}
-.date-field input[type="date"]:focus { border-color:var(--social); }
-.days-display { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; margin-top:6px; }
-.days-display.neg { color:var(--pending); }
-.days-display.pos { color:var(--done); }
-.days-sub { font-size:10px; color:var(--muted); margin-top:2px; }
+/* ═══ HEADER ═══ */
+.top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+.logo span{color:var(--social);}
+.back-btn{display:inline-flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);transition:all .2s;}
+.back-btn:hover{border-color:var(--social);color:var(--social);}
 
-/* OVERALL */
-.overall-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
-.overall-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 20px; }
-.overall-top { display:flex; justify-content:space-between; margin-bottom:8px; }
-.overall-name { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; }
-.overall-pct { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; }
-.overall-bar { height:7px; background:var(--surface2); border-radius:6px; overflow:hidden; }
-.overall-fill { height:100%; border-radius:6px; transition:width 1s ease; }
+/* ═══ HOME — two columns ═══ */
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
+.panel-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+.btn-add{display:inline-flex;align-items:center;gap:6px;background:var(--social);color:#fff;border:none;border-radius:9px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.btn-add:hover{opacity:.85;}
 
-/* SECTION */
-.section-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; margin-bottom:20px; overflow:hidden; }
-.section-header { display:flex; align-items:center; gap:10px; padding:14px 22px; border-bottom:1px solid var(--border); }
-.section-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
-.section-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
+/* CLIENT CARDS */
+.clients-body{padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;min-height:120px;}
+.client-card{background:var(--surface2);border:1px solid var(--border);border-radius:13px;padding:16px 14px;cursor:pointer;transition:all .25s;position:relative;}
+.client-card:hover{border-color:var(--social);transform:translateY(-2px);box-shadow:0 6px 24px rgba(59,130,246,.18);}
+.client-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;margin-bottom:10px;}
+.client-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.client-date{font-size:10px;color:var(--muted);}
+.client-prog{margin-top:8px;height:4px;background:var(--border);border-radius:4px;overflow:hidden;}
+.client-prog-fill{height:100%;border-radius:4px;}
+.client-del{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:rgba(239,68,68,.15);color:#f87171;border:none;cursor:pointer;font-size:12px;display:none;align-items:center;justify-content:center;}
+.client-card:hover .client-del{display:flex;}
+.empty-hint{color:var(--muted);font-size:12px;padding:20px;text-align:center;grid-column:1/-1;}
 
-/* TABLE */
-.task-table { width:100%; overflow-x:auto; }
-table { width:100%; border-collapse:collapse; font-size:12px; }
-thead th {
-  padding:9px 10px; text-align:center; font-size:10px; font-weight:600;
-  text-transform:uppercase; letter-spacing:.6px; color:var(--muted);
-  border-bottom:1px solid var(--border); white-space:nowrap; background:var(--surface2);
-}
-thead th:first-child { text-align:left; min-width:70px; }
-tbody td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:middle; text-align:center; }
-tbody td:first-child { text-align:left; font-weight:600; font-size:11px; color:var(--muted); white-space:nowrap; }
-tbody tr:last-child td { border-bottom:none; }
+/* TASKS PANEL */
+.tasks-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.tasks-tab{flex:1;padding:12px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);transition:all .2s;}
+.tasks-tab.active{color:var(--text);border-bottom-color:var(--social);}
+.tasks-tab[data-tab="copy"].active{border-bottom-color:var(--copy);color:var(--copy);}
+.tasks-tab[data-tab="motion"].active{border-bottom-color:var(--motion);color:var(--motion);}
+.tasks-tab[data-tab="design"].active{border-bottom-color:var(--design);color:var(--design);}
+.tasks-body{padding:14px;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.task-input-row{display:flex;gap:8px;margin-bottom:12px;}
+.task-input-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;padding:8px 12px;outline:none;}
+.task-input-row input:focus{border-color:var(--social);}
+.task-input-row button{background:var(--social);color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:16px;cursor:pointer;}
+.task-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;}
+.task-item{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;}
+.task-chk{width:18px;height:18px;border-radius:5px;border:2px solid var(--border);background:transparent;cursor:pointer;appearance:none;position:relative;flex-shrink:0;transition:all .2s;}
+.task-chk:checked{background:var(--done);border-color:var(--done);}
+.task-chk:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:10px;font-weight:800;}
+.task-text{flex:1;font-size:12px;}
+.task-text.done{text-decoration:line-through;color:var(--muted);}
+.task-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 2px;}
+.task-rm:hover{color:var(--pending);}
+.task-priority{font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700;}
+.pri-high{background:rgba(239,68,68,.15);color:#f87171;}
+.pri-med{background:rgba(245,158,11,.15);color:#fbbf24;}
+.pri-low{background:rgba(100,116,139,.15);color:#94a3b8;}
+.task-meta{display:flex;align-items:center;gap:6px;}
 
-.status-sel {
-  padding:3px 8px; border-radius:20px; font-size:10px; font-weight:700;
-  border:none; outline:none; cursor:pointer; font-family:'DM Sans',sans-serif;
-  appearance:none; text-align:center; width:82px;
-}
-.status-sel.done    { background:rgba(16,185,129,.18); color:#34d399; }
-.status-sel.hold    { background:rgba(245,158,11,.18);  color:#fbbf24; }
-.status-sel.pending { background:rgba(100,116,139,.15); color:#94a3b8; }
+/* ═══ MODAL ═══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;width:380px;transform:translateY(20px);transition:transform .3s;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:20px;}
+.modal label{font-size:11px;color:var(--muted);display:block;margin-bottom:5px;margin-top:12px;}
+.modal input,.modal select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 14px;outline:none;}
+.modal input:focus,.modal select:focus{border-color:var(--social);}
+.modal-actions{display:flex;gap:10px;margin-top:22px;}
+.btn-confirm{flex:1;background:var(--social);color:#fff;border:none;border-radius:10px;padding:11px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-cancel{background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:11px 18px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
 
-.dl-input {
-  background:var(--surface2); border:1px solid var(--border); border-radius:6px;
-  color:var(--text); font-family:'DM Sans',sans-serif; font-size:10px;
-  padding:3px 4px; width:100%; min-width:90px; outline:none; text-align:center;
-}
-.dl-input:focus { border-color:var(--media); }
+/* ═══ DASHBOARD PAGE ═══ */
+.client-banner{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:14px;}
+.client-banner .av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;}
+.client-banner .info h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;}
+.client-banner .info p{font-size:11px;color:var(--muted);margin-top:2px;}
+.save-indicator{font-size:11px;color:var(--done);opacity:0;transition:opacity .4s;margin-left:auto;}
+.save-indicator.show{opacity:1;}
 
-.prog-wrap { display:flex; align-items:center; gap:8px; }
-.prog-bar { flex:1; height:5px; background:var(--surface2); border-radius:4px; overflow:hidden; }
-.prog-fill { height:100%; border-radius:4px; transition:width 1s ease; }
-.prog-label { font-size:11px; font-weight:700; width:30px; }
+/* Date cards */
+.dates-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.date-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 16px;position:relative;overflow:hidden;}
+.date-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.date-card.c-con::before{background:#8b5cf6;}
+.date-card.c-sm::before{background:var(--social);}
+.date-card.c-mb::before{background:var(--media);}
+.date-card.c-seo::before{background:var(--seo);}
+.card-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;}
+.card-name-input{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;background:transparent;border:none;outline:none;color:var(--text);width:100%;margin-bottom:8px;border-bottom:1px dashed var(--border);padding-bottom:3px;}
+.date-fields{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px;}
+.date-field label{font-size:9px;color:var(--muted);display:block;margin-bottom:2px;}
+.date-field input[type="date"]{background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:10px;padding:3px 5px;width:100%;outline:none;}
+.days-display{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.days-display.neg{color:var(--pending);}
+.days-display.pos{color:var(--done);}
+.days-sub{font-size:9px;color:var(--muted);}
 
-.report-check { display:flex; flex-direction:column; align-items:center; gap:3px; }
-.report-check label { font-size:9px; color:var(--muted); }
-.chk {
-  width:22px; height:22px; border-radius:6px; border:2px solid var(--border);
-  background:var(--surface2); cursor:pointer; appearance:none; position:relative; transition:all .2s;
-}
-.chk:checked { background:var(--done); border-color:var(--done); }
-.chk:checked::after { content:'✓'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#fff; font-size:12px; font-weight:800; }
+/* Overall */
+.overall-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.overall-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 18px;}
+.overall-top{display:flex;justify-content:space-between;margin-bottom:7px;}
+.overall-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;}
+.overall-pct{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.overall-bar{height:6px;background:var(--surface2);border-radius:6px;overflow:hidden;}
+.overall-fill{height:100%;border-radius:6px;transition:width 1s ease;}
 
-.inline-input {
-  background:transparent; border:none; outline:none; color:var(--text);
-  font-family:'DM Sans',sans-serif; font-size:11px; width:100%;
-  border-bottom:1px dashed var(--border); padding:2px 0;
-}
-.inline-input:focus { border-bottom-color:var(--social); }
-.inline-input::placeholder { color:var(--muted); }
+/* Section */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:15px;margin-bottom:16px;overflow:hidden;}
+.section-header{display:flex;align-items:center;gap:9px;padding:13px 20px;border-bottom:1px solid var(--border);}
+.section-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.section-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+.task-table{width:100%;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:11px;}
+thead th{padding:8px 9px;text-align:center;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;background:var(--surface2);}
+thead th:first-child{text-align:left;min-width:65px;}
+tbody td{padding:8px 9px;border-bottom:1px solid var(--border);vertical-align:middle;text-align:center;}
+tbody td:first-child{text-align:left;font-weight:600;font-size:10px;color:var(--muted);white-space:nowrap;}
+tbody tr:last-child td{border-bottom:none;}
+.status-sel{padding:3px 7px;border-radius:18px;font-size:9px;font-weight:700;border:none;outline:none;cursor:pointer;font-family:'DM Sans',sans-serif;appearance:none;text-align:center;width:76px;}
+.status-sel.done{background:rgba(16,185,129,.18);color:#34d399;}
+.status-sel.hold{background:rgba(245,158,11,.18);color:#fbbf24;}
+.status-sel.pending{background:rgba(100,116,139,.15);color:#94a3b8;}
+.dl-input{background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:9px;padding:3px 4px;width:100%;min-width:85px;outline:none;text-align:center;}
+.prog-wrap{display:flex;align-items:center;gap:7px;}
+.prog-bar{flex:1;height:4px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.prog-label{font-size:10px;font-weight:700;width:28px;}
+.report-check{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.report-check label{font-size:8px;color:var(--muted);}
+.chk{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);background:var(--surface2);cursor:pointer;appearance:none;position:relative;transition:all .2s;}
+.chk:checked{background:var(--done);border-color:var(--done);}
+.chk:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:10px;font-weight:800;}
+.inline-input{background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:10px;width:100%;border-bottom:1px dashed var(--border);padding:2px 0;}
+.inline-input:focus{border-bottom-color:var(--social);}
+.inline-input::placeholder{color:var(--muted);}
 
 /* Charts */
-.charts-section { margin-top:28px; }
-.charts-section h2 { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; margin-bottom:18px; }
-.charts-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px; }
-.charts-grid-2 { display:grid; grid-template-columns:2fr 1fr; gap:14px; }
-.chart-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; }
-.chart-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:7px; }
-.chart-title .dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-.chart-wrap { position:relative; height:185px; }
-.chart-wrap-tall { position:relative; height:245px; }
+.charts-section{margin-top:20px;}
+.charts-section h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:14px;}
+.charts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;}
+.charts-grid-2{display:grid;grid-template-columns:2fr 1fr;gap:12px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.chart-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.chart-title .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.chart-wrap{position:relative;height:170px;}
+.chart-wrap-tall{position:relative;height:220px;}
 
-/* EXPORT PDF BUTTON */
-.export-section { margin-top:32px; padding-top:24px; border-top:1px solid var(--border); display:flex; justify-content:center; gap:12px; }
-.btn-export {
-  display:inline-flex; align-items:center; gap:8px;
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  color:#fff; border:none; border-radius:12px; padding:14px 32px;
-  font-family:'Syne',sans-serif; font-size:15px; font-weight:700;
-  cursor:pointer; transition:transform .2s, box-shadow .2s;
-  box-shadow:0 4px 20px rgba(59,130,246,.35);
-}
-.btn-export:hover { transform:translateY(-2px); box-shadow:0 6px 28px rgba(59,130,246,.5); }
-.btn-reset {
-  display:inline-flex; align-items:center; gap:8px;
-  background:rgba(239,68,68,.15); color:#f87171; border:1px solid rgba(239,68,68,.3);
-  border-radius:12px; padding:14px 24px;
-  font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
-  cursor:pointer; transition:all .2s;
-}
-.btn-reset:hover { background:rgba(239,68,68,.25); }
+/* Export */
+.export-section{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:center;gap:10px;}
+.btn-export{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;border:none;border-radius:11px;padding:12px 28px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(59,130,246,.3);transition:transform .2s,box-shadow .2s;}
+.btn-export:hover{transform:translateY(-2px);box-shadow:0 6px 26px rgba(59,130,246,.45);}
+.btn-rst{display:inline-flex;align-items:center;gap:7px;background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);border-radius:11px;padding:12px 20px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-rst:hover{background:rgba(239,68,68,.22);}
 
-/* PRINT STYLES */
-@media print {
-  body { background:#fff !important; color:#000 !important; padding:16px; }
-  .header { border-bottom:2px solid #ddd; }
-  .header h1, .header h1 span { color:#000 !important; }
-  .btn-export, .btn-reset, .export-section { display:none !important; }
-  .date-card, .overall-card, .section-card, .chart-card {
-    background:#f8f9fa !important; border:1px solid #ddd !important;
-    -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    break-inside:avoid;
-  }
-  .status-sel { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .charts-grid, .charts-grid-2 { break-inside:avoid; }
-  .save-indicator { display:none; }
-  canvas { max-width:100%; }
-}
+@media print{.back-btn,.export-section,.btn-export,.btn-rst,.save-indicator{display:none!important;}body{background:#fff!important;color:#000!important;}}
+.fade-in{animation:fadeUp .4s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:800px){.home-grid,.dates-row,.overall-row,.charts-grid,.charts-grid-2{grid-template-columns:1fr;}}
 
-.fade-in { animation:fadeUp .5s ease both; }
-@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-@media(max-width:900px){ .dates-row,.overall-row,.charts-grid,.charts-grid-2{grid-template-columns:1fr;} }
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--surface2);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 </style>
 </head>
 <body>
 
-<div class="header fade-in">
-  <h1>Marketing <span>Dashboard</span></h1>
-  <div class="header-right">
+<!-- ══════════════════════════════════════════════ -->
+<!-- HOME PAGE -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="top-bar fade-in">
+    <div class="logo">Marketing <span>OS</span></div>
+    <div style="font-size:11px;color:var(--muted)" id="home-date"></div>
+  </div>
+
+  <div class="home-grid fade-in" style="animation-delay:.1s">
+
+    <!-- CLIENTS PANEL -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">👥 Clients</div>
+        <button class="btn-add" onclick="openAddClient()">＋ New Client</button>
+      </div>
+      <div class="clients-body" id="clients-grid">
+        <div class="empty-hint">No clients yet. Add your first client ↗</div>
+      </div>
+    </div>
+
+    <!-- TASKS PANEL -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">✅ Tasks</div>
+      </div>
+      <div class="tasks-tabs">
+        <div class="tasks-tab active" data-tab="copy" onclick="switchTab('copy')">✍️ Copy</div>
+        <div class="tasks-tab" data-tab="motion" onclick="switchTab('motion')">🎬 Motion</div>
+        <div class="tasks-tab" data-tab="design" onclick="switchTab('design')">🎨 Design</div>
+      </div>
+      <div class="tasks-body">
+        <div id="tab-copy" class="tab-content active"></div>
+        <div id="tab-motion" class="tab-content"></div>
+        <div id="tab-design" class="tab-content"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- DASHBOARD PAGE -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goHome()">← Back</button>
     <span class="save-indicator" id="saveIndicator">✓ Saved</span>
-    <div style="font-size:12px;color:var(--muted)">Updated: <span id="lastUpdate"></span></div>
   </div>
-</div>
 
-<!-- CONTRACT CARDS -->
-<div class="dates-row fade-in" style="animation-delay:.1s">
-  <div class="date-card contract">
-    <div class="card-label">Contract</div>
-    <input class="card-name-input" id="con-name" placeholder="اسم العقد..." value="3 Month (1 Full - 2 Media)" oninput="saveAll()"/>
-    <div class="date-fields">
-      <div class="date-field"><label>Start</label><input type="date" id="con-start" value="2026-01-02" onchange="calcDays('con','con-days','con-sub');saveAll()"/></div>
-      <div class="date-field"><label>End</label><input type="date" id="con-end" value="2026-03-01" onchange="calcDays('con','con-days','con-sub');saveAll()"/></div>
+  <div class="client-banner fade-in">
+    <div class="av" id="dash-av"></div>
+    <div class="info">
+      <h2 id="dash-name"></h2>
+      <p id="dash-since"></p>
     </div>
-    <div class="days-display neg" id="con-days">-11</div>
-    <div class="days-sub" id="con-sub">days remaining</div>
   </div>
-  <div class="date-card social">
-    <div class="card-label">Social Media</div>
-    <input class="card-name-input" id="sm-name" placeholder="اسم الكمبين..." value="Campaign Period" oninput="saveAll()"/>
-    <div class="date-fields">
-      <div class="date-field"><label>Start</label><input type="date" id="sm-start" value="2026-01-01" onchange="calcDays('sm','sm-days','sm-sub');saveAll()"/></div>
-      <div class="date-field"><label>End</label><input type="date" id="sm-end" value="2026-03-01" onchange="calcDays('sm','sm-days','sm-sub');saveAll()"/></div>
-    </div>
-    <div class="days-display pos" id="sm-days">48</div>
-    <div class="days-sub" id="sm-sub">days total</div>
-  </div>
-  <div class="date-card media">
-    <div class="card-label">Media Buying</div>
-    <input class="card-name-input" id="mb-name" placeholder="اسم الكمبين..." value="Campaign Period" oninput="saveAll()"/>
-    <div class="date-fields">
-      <div class="date-field"><label>Start</label><input type="date" id="mb-start" value="2026-01-01" onchange="calcDays('mb','mb-days','mb-sub');saveAll()"/></div>
-      <div class="date-field"><label>End</label><input type="date" id="mb-end" value="2026-03-01" onchange="calcDays('mb','mb-days','mb-sub');saveAll()"/></div>
-    </div>
-    <div class="days-display pos" id="mb-days">48</div>
-    <div class="days-sub" id="mb-sub">days total</div>
-  </div>
-  <div class="date-card seoc">
-    <div class="card-label">SEO</div>
-    <input class="card-name-input" id="seo-name" placeholder="اسم الكمبين..." value="Campaign Period" oninput="saveAll()"/>
-    <div class="date-fields">
-      <div class="date-field"><label>Start</label><input type="date" id="seo-start" value="2026-01-01" onchange="calcDays('seo','seo-days','seo-sub');saveAll()"/></div>
-      <div class="date-field"><label>End</label><input type="date" id="seo-end" value="2026-02-01" onchange="calcDays('seo','seo-days','seo-sub');saveAll()"/></div>
-    </div>
-    <div class="days-display pos" id="seo-days">17</div>
-    <div class="days-sub" id="seo-sub">days remaining</div>
-  </div>
-</div>
 
-<!-- OVERALL -->
-<div class="overall-row fade-in" style="animation-delay:.2s">
-  <div class="overall-card">
-    <div class="overall-top"><span class="overall-name" style="color:var(--social)">📱 Social Media</span><span class="overall-pct" id="sm-pct" style="color:var(--social)">0%</span></div>
-    <div class="overall-bar"><div class="overall-fill" id="sm-bar" style="width:0%;background:var(--social)"></div></div>
+  <!-- DATE CARDS -->
+  <div class="dates-row fade-in" style="animation-delay:.1s">
+    <div class="date-card c-con">
+      <div class="card-label">Contract</div>
+      <input class="card-name-input" id="con-name" placeholder="Contract name..." oninput="dSave()"/>
+      <div class="date-fields">
+        <div class="date-field"><label>Start</label><input type="date" id="con-start" onchange="calcDays('con');dSave()"/></div>
+        <div class="date-field"><label>End</label><input type="date" id="con-end" onchange="calcDays('con');dSave()"/></div>
+      </div>
+      <div class="days-display pos" id="con-days">—</div>
+      <div class="days-sub" id="con-sub">days remaining</div>
+    </div>
+    <div class="date-card c-sm">
+      <div class="card-label">Social Media</div>
+      <input class="card-name-input" id="sm-name" placeholder="Campaign name..." oninput="dSave()"/>
+      <div class="date-fields">
+        <div class="date-field"><label>Start</label><input type="date" id="sm-start" onchange="calcDays('sm');dSave()"/></div>
+        <div class="date-field"><label>End</label><input type="date" id="sm-end" onchange="calcDays('sm');dSave()"/></div>
+      </div>
+      <div class="days-display pos" id="sm-days">—</div>
+      <div class="days-sub" id="sm-sub">days remaining</div>
+    </div>
+    <div class="date-card c-mb">
+      <div class="card-label">Media Buying</div>
+      <input class="card-name-input" id="mb-name" placeholder="Campaign name..." oninput="dSave()"/>
+      <div class="date-fields">
+        <div class="date-field"><label>Start</label><input type="date" id="mb-start" onchange="calcDays('mb');dSave()"/></div>
+        <div class="date-field"><label>End</label><input type="date" id="mb-end" onchange="calcDays('mb');dSave()"/></div>
+      </div>
+      <div class="days-display pos" id="mb-days">—</div>
+      <div class="days-sub" id="mb-sub">days remaining</div>
+    </div>
+    <div class="date-card c-seo">
+      <div class="card-label">SEO</div>
+      <input class="card-name-input" id="seo-name" placeholder="Campaign name..." oninput="dSave()"/>
+      <div class="date-fields">
+        <div class="date-field"><label>Start</label><input type="date" id="seo-start" onchange="calcDays('seo');dSave()"/></div>
+        <div class="date-field"><label>End</label><input type="date" id="seo-end" onchange="calcDays('seo');dSave()"/></div>
+      </div>
+      <div class="days-display pos" id="seo-days">—</div>
+      <div class="days-sub" id="seo-sub">days remaining</div>
+    </div>
   </div>
-  <div class="overall-card">
-    <div class="overall-top"><span class="overall-name" style="color:var(--media)">📺 Media Buying</span><span class="overall-pct" id="mb-pct" style="color:var(--media)">0%</span></div>
-    <div class="overall-bar"><div class="overall-fill" id="mb-bar" style="width:0%;background:var(--media)"></div></div>
-  </div>
-  <div class="overall-card">
-    <div class="overall-top"><span class="overall-name" style="color:var(--seo)">🔍 SEO</span><span class="overall-pct" id="seo-pct" style="color:var(--seo)">0%</span></div>
-    <div class="overall-bar"><div class="overall-fill" id="seo-bar" style="width:0%;background:var(--seo)"></div></div>
-  </div>
-</div>
 
-<!-- SOCIAL MEDIA -->
-<div class="section-card fade-in" style="animation-delay:.3s">
-  <div class="section-header">
-    <div class="section-dot" style="background:var(--social)"></div>
-    <div class="section-title" style="color:var(--social)">Social Media</div>
+  <!-- OVERALL -->
+  <div class="overall-row fade-in" style="animation-delay:.2s">
+    <div class="overall-card">
+      <div class="overall-top"><span class="overall-name" style="color:var(--social)">📱 Social Media</span><span class="overall-pct" id="sm-pct" style="color:var(--social)">0%</span></div>
+      <div class="overall-bar"><div class="overall-fill" id="sm-bar" style="width:0%;background:var(--social)"></div></div>
+    </div>
+    <div class="overall-card">
+      <div class="overall-top"><span class="overall-name" style="color:var(--media)">📺 Media Buying</span><span class="overall-pct" id="mb-pct" style="color:var(--media)">0%</span></div>
+      <div class="overall-bar"><div class="overall-fill" id="mb-bar" style="width:0%;background:var(--media)"></div></div>
+    </div>
+    <div class="overall-card">
+      <div class="overall-top"><span class="overall-name" style="color:var(--seo)">🔍 SEO</span><span class="overall-pct" id="seo-pct" style="color:var(--seo)">0%</span></div>
+      <div class="overall-bar"><div class="overall-fill" id="seo-bar" style="width:0%;background:var(--seo)"></div></div>
+    </div>
   </div>
-  <div class="task-table">
-    <table id="sm-table">
-      <thead><tr>
-        <th></th><th>Brief</th><th>Access / Create</th><th>Audit Account</th>
-        <th>Content Plan</th><th>Design</th><th>Videos</th><th>Publish</th>
-        <th>Week 1 📋</th><th>Week 2 📋</th><th>Week 3 📋</th><th>Monthly 📋</th>
-      </tr></thead>
+
+  <!-- SOCIAL MEDIA TABLE -->
+  <div class="section-card fade-in" style="animation-delay:.3s">
+    <div class="section-header"><div class="section-dot" style="background:var(--social)"></div><div class="section-title" style="color:var(--social)">Social Media</div></div>
+    <div class="task-table"><table id="sm-table">
+      <thead><tr><th></th><th>Brief</th><th>Access/Create</th><th>Audit</th><th>Content Plan</th><th>Design</th><th>Videos</th><th>Publish</th><th>Wk1 📋</th><th>Wk2 📋</th><th>Wk3 📋</th><th>Monthly 📋</th></tr></thead>
       <tbody>
-        <tr>
-          <td>Status</td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+        <tr><td>Status</td>
+          <td><select class="status-sel pending" onchange="onSel(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'sm')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
         </tr>
-        <tr>
-          <td>Deadline</td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td colspan="4"></td>
+        <tr><td>Deadline</td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td colspan="4"></td>
         </tr>
-        <tr>
-          <td>Link</td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td colspan="4"></td>
+        <tr><td>Link</td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td colspan="4"></td>
         </tr>
-        <tr>
-          <td>Note</td>
-          <td colspan="7"><input class="inline-input" placeholder="ملاحظة عامة..." oninput="saveAll()"/></td>
-          <td colspan="4"></td>
-        </tr>
-        <tr>
-          <td>Progress</td>
-          <td colspan="7"><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" id="sm-prog" style="width:0%;background:var(--social)"></div></div><span class="prog-label" id="sm-prog-lbl" style="color:var(--social)">0%</span></div></td>
-          <td colspan="4"></td>
-        </tr>
+        <tr><td>Note</td><td colspan="7"><input class="inline-input" placeholder="Note..." oninput="dSave()"/></td><td colspan="4"></td></tr>
+        <tr><td>Progress</td><td colspan="7"><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" id="sm-prog" style="width:0%;background:var(--social)"></div></div><span class="prog-label" id="sm-prog-lbl" style="color:var(--social)">0%</span></div></td><td colspan="4"></td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
-</div>
 
-<!-- MEDIA BUYING -->
-<div class="section-card fade-in" style="animation-delay:.4s">
-  <div class="section-header">
-    <div class="section-dot" style="background:var(--media)"></div>
-    <div class="section-title" style="color:var(--media)">Media Buying</div>
-  </div>
-  <div class="task-table">
-    <table id="mb-table">
-      <thead><tr>
-        <th></th><th>Brief</th><th>Access / Create</th><th>Audit Account</th>
-        <th>Tracking</th><th>Media Plan</th><th>Design</th><th>Videos</th><th>ADS</th>
-        <th>Week 1 📋</th><th>Week 2 📋</th><th>Week 3 📋</th><th>Monthly 📋</th>
-      </tr></thead>
+  <!-- MEDIA BUYING TABLE -->
+  <div class="section-card fade-in" style="animation-delay:.4s">
+    <div class="section-header"><div class="section-dot" style="background:var(--media)"></div><div class="section-title" style="color:var(--media)">Media Buying</div></div>
+    <div class="task-table"><table id="mb-table">
+      <thead><tr><th></th><th>Brief</th><th>Access/Create</th><th>Audit</th><th>Tracking</th><th>Media Plan</th><th>Design</th><th>Videos</th><th>ADS</th><th>Wk1 📋</th><th>Wk2 📋</th><th>Wk3 📋</th><th>Monthly 📋</th></tr></thead>
       <tbody>
-        <tr>
-          <td>Status</td>
-          <td><select class="status-sel done" onchange="onStatus(this,'mb')"><option value="done" selected>Done</option><option value="pending">Pending</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel hold" onchange="onStatus(this,'mb')"><option value="hold" selected>Hold</option><option value="done">Done</option><option value="pending">Pending</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel done" onchange="onStatus(this,'mb')"><option value="done" selected>Done</option><option value="pending">Pending</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+        <tr><td>Status</td>
+          <td><select class="status-sel pending" onchange="onSel(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'mb')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
         </tr>
-        <tr>
-          <td>Deadline</td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+        <tr><td>Deadline</td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
           <td colspan="4"></td>
         </tr>
-        <tr>
-          <td>Link</td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" value="Marketing Plan" oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+        <tr><td>Link</td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
           <td colspan="4"></td>
         </tr>
-        <tr>
-          <td>Note</td>
-          <td colspan="8"><input class="inline-input" placeholder="ملاحظة عامة..." value="جديد" oninput="saveAll()"/></td>
-          <td colspan="4"></td>
-        </tr>
-        <tr>
-          <td>Progress</td>
-          <td colspan="8"><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" id="mb-prog" style="width:25%;background:var(--media)"></div></div><span class="prog-label" id="mb-prog-lbl" style="color:var(--media)">25%</span></div></td>
-          <td colspan="4"></td>
-        </tr>
+        <tr><td>Note</td><td colspan="8"><input class="inline-input" placeholder="Note..." oninput="dSave()"/></td><td colspan="4"></td></tr>
+        <tr><td>Progress</td><td colspan="8"><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" id="mb-prog" style="width:0%;background:var(--media)"></div></div><span class="prog-label" id="mb-prog-lbl" style="color:var(--media)">0%</span></div></td><td colspan="4"></td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
-</div>
 
-<!-- SEO -->
-<div class="section-card fade-in" style="animation-delay:.5s">
-  <div class="section-header">
-    <div class="section-dot" style="background:var(--seo)"></div>
-    <div class="section-title" style="color:var(--seo)">SEO</div>
-  </div>
-  <div class="task-table">
-    <table id="seo-table">
-      <thead><tr>
-        <th></th><th>Brief</th><th>Access</th><th>Audit Website</th>
-        <th>SEO Plan</th><th>UI</th><th>Logo</th><th>Content</th><th>Launch</th>
-        <th>Week 1 📋</th><th>Week 2 📋</th><th>Week 3 📋</th><th>Monthly 📋</th>
-      </tr></thead>
+  <!-- SEO TABLE -->
+  <div class="section-card fade-in" style="animation-delay:.5s">
+    <div class="section-header"><div class="section-dot" style="background:var(--seo)"></div><div class="section-title" style="color:var(--seo)">SEO</div></div>
+    <div class="task-table"><table id="seo-table">
+      <thead><tr><th></th><th>Brief</th><th>Access</th><th>Audit Website</th><th>SEO Plan</th><th>UI</th><th>Logo</th><th>Content</th><th>Launch</th><th>Wk1 📋</th><th>Wk2 📋</th><th>Wk3 📋</th><th>Monthly 📋</th></tr></thead>
       <tbody>
-        <tr>
-          <td>Status</td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><select class="status-sel pending" onchange="onStatus(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
-          <td><div class="report-check"><input type="checkbox" class="chk" onchange="saveAll()"/><label>Sent ✓</label></div></td>
+        <tr><td>Status</td>
+          <td><select class="status-sel pending" onchange="onSel(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><select class="status-sel pending" onchange="onSel(this,'seo')"><option value="pending">Pending</option><option value="done">Done</option><option value="hold">Hold</option></select></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
+          <td><div class="report-check"><input type="checkbox" class="chk" onchange="dSave()"/><label>Sent</label></div></td>
         </tr>
-        <tr>
-          <td>Deadline</td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
-          <td><input type="date" class="dl-input" onchange="saveAll()"/></td>
+        <tr><td>Deadline</td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
+          <td><input type="date" class="dl-input" onchange="dSave()"/></td><td><input type="date" class="dl-input" onchange="dSave()"/></td>
           <td colspan="4"></td>
         </tr>
-        <tr>
-          <td>Link</td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
-          <td><input class="inline-input" placeholder="رابط..." oninput="saveAll()"/></td>
+        <tr><td>Link</td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
+          <td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td><td><input class="inline-input" placeholder="Link..." oninput="dSave()"/></td>
           <td colspan="4"></td>
         </tr>
-        <tr>
-          <td>Note</td>
-          <td colspan="8"><input class="inline-input" placeholder="ملاحظة عامة..." oninput="saveAll()"/></td>
-          <td colspan="4"></td>
-        </tr>
-        <tr>
-          <td>Progress</td>
-          <td colspan="8"><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" id="seo-prog" style="width:0%;background:var(--seo)"></div></div><span class="prog-label" id="seo-prog-lbl" style="color:var(--seo)">0%</span></div></td>
-          <td colspan="4"></td>
-        </tr>
+        <tr><td>Note</td><td colspan="8"><input class="inline-input" placeholder="Note..." oninput="dSave()"/></td><td colspan="4"></td></tr>
+        <tr><td>Progress</td><td colspan="8"><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" id="seo-prog" style="width:0%;background:var(--seo)"></div></div><span class="prog-label" id="seo-prog-lbl" style="color:var(--seo)">0%</span></div></td><td colspan="4"></td></tr>
       </tbody>
-    </table>
+    </table></div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-section fade-in" style="animation-delay:.6s">
+    <h2>📊 Analytics</h2>
+    <div class="charts-grid">
+      <div class="chart-card"><div class="chart-title"><div class="dot" style="background:var(--social)"></div>Social Media</div><div class="chart-wrap"><canvas id="smDonut"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title"><div class="dot" style="background:var(--media)"></div>Media Buying</div><div class="chart-wrap"><canvas id="mbDonut"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title"><div class="dot" style="background:var(--seo)"></div>SEO</div><div class="chart-wrap"><canvas id="seoDonut"></canvas></div></div>
+    </div>
+    <div class="charts-grid-2">
+      <div class="chart-card"><div class="chart-title">📈 Progress Comparison</div><div class="chart-wrap-tall"><canvas id="barChart"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">🕸 Radar</div><div class="chart-wrap-tall"><canvas id="radarChart"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="export-section fade-in" style="animation-delay:.7s">
+    <button class="btn-rst" onclick="resetDash()">🗑 Reset</button>
+    <button class="btn-export" onclick="window.print()">📄 Export PDF</button>
   </div>
 </div>
 
-<!-- CHARTS -->
-<div class="charts-section fade-in" style="animation-delay:.6s">
-  <h2>📊 Analytics Overview</h2>
-  <div class="charts-grid">
-    <div class="chart-card">
-      <div class="chart-title"><div class="dot" style="background:var(--social)"></div>Social Media — Tasks</div>
-      <div class="chart-wrap"><canvas id="smDonut"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title"><div class="dot" style="background:var(--media)"></div>Media Buying — Tasks</div>
-      <div class="chart-wrap"><canvas id="mbDonut"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title"><div class="dot" style="background:var(--seo)"></div>SEO — Tasks</div>
-      <div class="chart-wrap"><canvas id="seoDonut"></canvas></div>
+<!-- ADD CLIENT MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>➕ New Client</h3>
+    <label>Client Name *</label>
+    <input id="new-client-name" placeholder="e.g. Nike Egypt" />
+    <label>Industry</label>
+    <input id="new-client-industry" placeholder="e.g. Fashion, Tech, Food..." />
+    <label>Start Date</label>
+    <input type="date" id="new-client-date" />
+    <label>Color</label>
+    <select id="new-client-color">
+      <option value="#3b82f6">🔵 Blue</option>
+      <option value="#f97316">🟠 Orange</option>
+      <option value="#10b981">🟢 Green</option>
+      <option value="#a855f7">🟣 Purple</option>
+      <option value="#ec4899">🩷 Pink</option>
+      <option value="#06b6d4">🩵 Cyan</option>
+      <option value="#f59e0b">🟡 Amber</option>
+      <option value="#ef4444">🔴 Red</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" onclick="addClient()">Create Client</button>
     </div>
   </div>
-  <div class="charts-grid-2">
-    <div class="chart-card">
-      <div class="chart-title">📈 Overall Progress Comparison</div>
-      <div class="chart-wrap-tall"><canvas id="barChart"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">🕸 Task Status Radar</div>
-      <div class="chart-wrap-tall"><canvas id="radarChart"></canvas></div>
-    </div>
-  </div>
-</div>
-
-<!-- EXPORT BUTTON -->
-<div class="export-section fade-in" style="animation-delay:.7s">
-  <button class="btn-reset" onclick="resetAll()">🗑 Reset Data</button>
-  <button class="btn-export" onclick="exportPDF()">📄 Export as PDF</button>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-// SAVE / LOAD  (localStorage)
-// ══════════════════════════════════════════════
-const SAVE_KEY = 'mkt_dashboard_v1';
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let clients = JSON.parse(localStorage.getItem('mkt_clients') || '[]');
+let taskData = JSON.parse(localStorage.getItem('mkt_tasks') || '{"copy":[],"motion":[],"design":[]}');
+let currentClientId = null;
+let charts = {};
 let saveTimer = null;
 
-function saveAll() {
-  // Collect all saveable elements with an id or data-idx
-  const data = {};
+// ══════════════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════════════
+document.getElementById('home-date').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-  // Named inputs
-  ['con-name','sm-name','mb-name','seo-name',
-   'con-start','con-end','sm-start','sm-end',
-   'mb-start','mb-end','seo-start','seo-end'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) data[id] = el.value;
-  });
-
-  // All status selects, dl-inputs, inline-inputs, checkboxes
-  // Give each a unique index within its class
-  document.querySelectorAll('.status-sel').forEach((el,i) => data['sel_'+i] = el.value);
-  document.querySelectorAll('.dl-input').forEach((el,i) => data['dl_'+i] = el.value);
-  document.querySelectorAll('.inline-input').forEach((el,i) => data['inp_'+i] = el.value);
-  document.querySelectorAll('.chk').forEach((el,i) => data['chk_'+i] = el.checked);
-
-  localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-
-  // Show saved indicator
-  clearTimeout(saveTimer);
-  const ind = document.getElementById('saveIndicator');
-  ind.classList.add('show');
-  saveTimer = setTimeout(()=>ind.classList.remove('show'), 1500);
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-function loadAll() {
-  const raw = localStorage.getItem(SAVE_KEY);
-  if(!raw) return;
-  const data = JSON.parse(raw);
+function goHome() {
+  destroyCharts();
+  showPage('page-home');
+  renderClients();
+}
 
-  ['con-name','sm-name','mb-name','seo-name',
-   'con-start','con-end','sm-start','sm-end',
-   'mb-start','mb-end','seo-start','seo-end'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el && data[id] !== undefined) el.value = data[id];
-  });
+// ══════════════════════════════════════════════════════════
+// CLIENTS
+// ══════════════════════════════════════════════════════════
+const COLORS = ['#3b82f6','#f97316','#10b981','#a855f7','#ec4899','#06b6d4','#f59e0b','#ef4444'];
 
-  document.querySelectorAll('.status-sel').forEach((el,i) => {
-    if(data['sel_'+i] !== undefined) {
-      el.value = data['sel_'+i];
-      el.className = 'status-sel ' + el.value;
-    }
-  });
-  document.querySelectorAll('.dl-input').forEach((el,i) => {
-    if(data['dl_'+i] !== undefined) el.value = data['dl_'+i];
-  });
-  document.querySelectorAll('.inline-input').forEach((el,i) => {
-    if(data['inp_'+i] !== undefined) el.value = data['inp_'+i];
-  });
-  document.querySelectorAll('.chk').forEach((el,i) => {
-    if(data['chk_'+i] !== undefined) el.checked = data['chk_'+i];
+function saveClients() { localStorage.setItem('mkt_clients', JSON.stringify(clients)); }
+
+function renderClients() {
+  const grid = document.getElementById('clients-grid');
+  if(!clients.length) {
+    grid.innerHTML = '<div class="empty-hint">No clients yet. Add your first client ↗</div>';
+    return;
+  }
+  grid.innerHTML = clients.map(c => {
+    const initials = c.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const dashData = JSON.parse(localStorage.getItem('mkt_dash_'+c.id) || '{}');
+    const pct = calcClientProgress(dashData);
+    return `
+    <div class="client-card" onclick="openClient('${c.id}')">
+      <button class="client-del" onclick="event.stopPropagation();deleteClient('${c.id}')" title="Delete">✕</button>
+      <div class="client-avatar" style="background:${c.color}">${initials}</div>
+      <div class="client-name" title="${c.name}">${c.name}</div>
+      <div class="client-date">${c.industry || ''} · ${c.date || 'No date'}</div>
+      <div class="client-prog"><div class="client-prog-fill" style="width:${pct}%;background:${c.color}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function calcClientProgress(data) {
+  if(!data.selects) return 0;
+  const done = data.selects.filter(v=>v==='done').length;
+  return Math.round(done / (data.selects.length||1) * 100);
+}
+
+function openAddClient() { document.getElementById('modal').classList.add('open'); document.getElementById('new-client-name').focus(); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function addClient() {
+  const name = document.getElementById('new-client-name').value.trim();
+  if(!name) { alert('Client name is required'); return; }
+  const c = {
+    id: 'c_'+Date.now(),
+    name,
+    industry: document.getElementById('new-client-industry').value.trim(),
+    date: document.getElementById('new-client-date').value,
+    color: document.getElementById('new-client-color').value
+  };
+  clients.push(c);
+  saveClients();
+  closeModal();
+  document.getElementById('new-client-name').value='';
+  document.getElementById('new-client-industry').value='';
+  document.getElementById('new-client-date').value='';
+  renderClients();
+  openClient(c.id);
+}
+
+function deleteClient(id) {
+  if(!confirm('Delete this client and all their data?')) return;
+  clients = clients.filter(c=>c.id!==id);
+  localStorage.removeItem('mkt_dash_'+id);
+  saveClients();
+  renderClients();
+}
+
+// ══════════════════════════════════════════════════════════
+// TASKS (Copy / Motion / Design)
+// ══════════════════════════════════════════════════════════
+function saveTasks() { localStorage.setItem('mkt_tasks', JSON.stringify(taskData)); }
+
+function switchTab(tab) {
+  document.querySelectorAll('.tasks-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.tasks-tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+function renderTasks() {
+  ['copy','motion','design'].forEach(tab => {
+    const color = tab==='copy'?'var(--copy)':tab==='motion'?'var(--motion)':'var(--design)';
+    const el = document.getElementById('tab-'+tab);
+    el.innerHTML = `
+      <div class="task-input-row">
+        <input id="tinput-${tab}" placeholder="Add task..." onkeydown="if(event.key==='Enter')addTask('${tab}')"/>
+        <select id="tpri-${tab}" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:0 8px;font-size:11px;outline:none;">
+          <option value="high">🔴 High</option>
+          <option value="med" selected>🟡 Med</option>
+          <option value="low">⚪ Low</option>
+        </select>
+        <button onclick="addTask('${tab}')" style="background:${color};color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer;">+</button>
+      </div>
+      <div class="task-list" id="tlist-${tab}">
+        ${(taskData[tab]||[]).map((t,i)=>`
+        <div class="task-item">
+          <input type="checkbox" class="task-chk" ${t.done?'checked':''} onchange="toggleTask('${tab}',${i})"/>
+          <span class="task-text ${t.done?'done':''}">${t.text}</span>
+          <div class="task-meta">
+            <span class="task-priority pri-${t.priority||'med'}">${t.priority||'med'}</span>
+            <button class="task-rm" onclick="removeTask('${tab}',${i})">✕</button>
+          </div>
+        </div>`).join('')}
+        ${!(taskData[tab]||[]).length?'<div style="color:var(--muted);font-size:11px;text-align:center;padding:16px;">No tasks yet</div>':''}
+      </div>`;
   });
 }
 
-function resetAll() {
-  if(!confirm('هتمسح كل البيانات. متأكد؟')) return;
-  localStorage.removeItem(SAVE_KEY);
-  location.reload();
+function addTask(tab) {
+  const inp = document.getElementById('tinput-'+tab);
+  const text = inp.value.trim();
+  if(!text) return;
+  const pri = document.getElementById('tpri-'+tab).value;
+  if(!taskData[tab]) taskData[tab]=[];
+  taskData[tab].push({text, priority:pri, done:false});
+  saveTasks();
+  renderTasks();
+  inp.value='';
+  inp.focus();
 }
 
-// ══════════════════════════════════════════════
-// DATES
-// ══════════════════════════════════════════════
-document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('en-GB');
+function toggleTask(tab, i) {
+  taskData[tab][i].done = !taskData[tab][i].done;
+  saveTasks();
+  renderTasks();
+}
 
-function calcDays(section, daysId, subId) {
+function removeTask(tab, i) {
+  taskData[tab].splice(i,1);
+  saveTasks();
+  renderTasks();
+}
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════
+function openClient(id) {
+  currentClientId = id;
+  const c = clients.find(x=>x.id===id);
+  if(!c) return;
+
+  showPage('page-dashboard');
+
+  // Banner
+  const initials = c.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const av = document.getElementById('dash-av');
+  av.textContent = initials;
+  av.style.background = c.color;
+  document.getElementById('dash-name').textContent = c.name;
+  document.getElementById('dash-since').textContent = (c.industry||'') + (c.date ? ' · Since '+c.date : '');
+
+  // Reset form
+  resetFormOnly();
+
+  // Load saved data
+  dLoad();
+
+  // Recalc
+  ['con','sm','mb','seo'].forEach(s=>calcDays(s));
+  ['sm','mb','seo'].forEach(recalc);
+
+  // Init charts
+  destroyCharts();
+  initCharts();
+  updateCharts();
+}
+
+function resetFormOnly() {
+  // Clear all selects
+  document.querySelectorAll('#page-dashboard .status-sel').forEach(s=>{s.value='pending';s.className='status-sel pending';});
+  // Clear inputs
+  document.querySelectorAll('#page-dashboard .card-name-input,.dl-input,.inline-input').forEach(i=>i.value='');
+  document.querySelectorAll('#page-dashboard input[type="date"]').forEach(i=>i.value='');
+  document.querySelectorAll('#page-dashboard .chk').forEach(c=>c.checked=false);
+}
+
+// ── DATES ──
+function calcDays(section) {
   const s = document.getElementById(section+'-start');
   const e = document.getElementById(section+'-end');
-  if(!s||!e||!s.value||!e.value) return;
-  const today = new Date(); today.setHours(0,0,0,0);
-  const end = new Date(e.value);
-  const start = new Date(s.value);
-  const total = Math.round((end-start)/86400000);
-  const remain = Math.round((end-today)/86400000);
-  const el = document.getElementById(daysId);
-  el.textContent = remain;
-  el.className = 'days-display ' + (remain < 0 ? 'neg' : 'pos');
-  const sub = document.getElementById(subId);
-  if(sub) sub.textContent = 'Total: '+total+' days';
+  const el = document.getElementById(section+'-days');
+  const sub = document.getElementById(section+'-sub');
+  if(!s||!e||!s.value||!e.value){if(el)el.textContent='—';return;}
+  const today=new Date();today.setHours(0,0,0,0);
+  const end=new Date(e.value), start=new Date(s.value);
+  const total=Math.round((end-start)/86400000);
+  const remain=Math.round((end-today)/86400000);
+  el.textContent=remain;
+  el.className='days-display '+(remain<0?'neg':'pos');
+  if(sub) sub.textContent='Total: '+total+' days';
 }
 
-// ══════════════════════════════════════════════
-// STATUS & PROGRESS
-// ══════════════════════════════════════════════
-function onStatus(sel, section) {
-  sel.className = 'status-sel ' + sel.value;
-  recalc(section);
-  updateCharts();
-  saveAll();
-}
+// ── STATUS ──
+function onSel(sel,sec){sel.className='status-sel '+sel.value;recalc(sec);updateCharts();dSave();}
 
-function recalc(sec) {
-  const sels = document.querySelectorAll('#'+sec+'-table tbody tr:first-child select.status-sel');
-  let done=0;
-  sels.forEach(s=>{ if(s.value==='done') done++; });
-  const pct = Math.round(done/sels.length*100);
+function recalc(sec){
+  const sels=document.querySelectorAll('#'+sec+'-table tbody tr:first-child select.status-sel');
+  let done=0;sels.forEach(s=>{if(s.value==='done')done++;});
+  const pct=Math.round(done/sels.length*100);
   document.getElementById(sec+'-prog').style.width=pct+'%';
   document.getElementById(sec+'-prog-lbl').textContent=pct+'%';
   document.getElementById(sec+'-pct').textContent=pct+'%';
   document.getElementById(sec+'-bar').style.width=pct+'%';
 }
 
-// ══════════════════════════════════════════════
-// CHARTS
-// ══════════════════════════════════════════════
+// ── SAVE / LOAD ──
+function dSave(){
+  if(!currentClientId) return;
+  const data={};
+  ['con-name','sm-name','mb-name','seo-name'].forEach(id=>{const e=document.getElementById(id);if(e)data[id]=e.value;});
+  document.querySelectorAll('#page-dashboard input[type="date"]').forEach((e,i)=>data['date_'+i]=e.value);
+  document.querySelectorAll('#page-dashboard .status-sel').forEach((e,i)=>data['sel_'+i]=e.value);
+  document.querySelectorAll('#page-dashboard .dl-input').forEach((e,i)=>data['dl_'+i]=e.value);
+  document.querySelectorAll('#page-dashboard .inline-input').forEach((e,i)=>data['inp_'+i]=e.value);
+  document.querySelectorAll('#page-dashboard .chk').forEach((e,i)=>data['chk_'+i]=e.checked);
+  // also store selects array for progress calc
+  data.selects=Array.from(document.querySelectorAll('#page-dashboard .status-sel')).map(s=>s.value);
+  localStorage.setItem('mkt_dash_'+currentClientId, JSON.stringify(data));
+  const ind=document.getElementById('saveIndicator');
+  ind.classList.add('show');
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>ind.classList.remove('show'),1500);
+}
+
+function dLoad(){
+  if(!currentClientId) return;
+  const raw=localStorage.getItem('mkt_dash_'+currentClientId);
+  if(!raw) return;
+  const data=JSON.parse(raw);
+  ['con-name','sm-name','mb-name','seo-name'].forEach(id=>{const e=document.getElementById(id);if(e&&data[id]!==undefined)e.value=data[id];});
+  document.querySelectorAll('#page-dashboard input[type="date"]').forEach((e,i)=>{if(data['date_'+i]!==undefined)e.value=data['date_'+i];});
+  document.querySelectorAll('#page-dashboard .status-sel').forEach((e,i)=>{if(data['sel_'+i]!==undefined){e.value=data['sel_'+i];e.className='status-sel '+e.value;}});
+  document.querySelectorAll('#page-dashboard .dl-input').forEach((e,i)=>{if(data['dl_'+i]!==undefined)e.value=data['dl_'+i];});
+  document.querySelectorAll('#page-dashboard .inline-input').forEach((e,i)=>{if(data['inp_'+i]!==undefined)e.value=data['inp_'+i];});
+  document.querySelectorAll('#page-dashboard .chk').forEach((e,i)=>{if(data['chk_'+i]!==undefined)e.checked=data['chk_'+i];});
+}
+
+function resetDash(){
+  if(!confirm('Reset all data for this client?')) return;
+  localStorage.removeItem('mkt_dash_'+currentClientId);
+  resetFormOnly();
+  ['sm','mb','seo'].forEach(recalc);
+  updateCharts();
+}
+
+// ── CHARTS ──
 Chart.defaults.color='#64748b';
 Chart.defaults.borderColor='#252a38';
 
-function mkDonut(id,color){
-  return new Chart(document.getElementById(id),{
-    type:'doughnut',
-    data:{ labels:['Done','Hold','Pending'], datasets:[{data:[0,0,1],backgroundColor:[color,'rgba(245,158,11,.6)','rgba(100,116,139,.2)'],borderWidth:0,hoverOffset:4}]},
-    options:{ responsive:true,maintainAspectRatio:false,cutout:'72%', plugins:{legend:{position:'bottom',labels:{font:{size:10},padding:8,boxWidth:8}}} }
+function initCharts(){
+  function mk(id,color){
+    return new Chart(document.getElementById(id),{
+      type:'doughnut',
+      data:{labels:['Done','Hold','Pending'],datasets:[{data:[0,0,1],backgroundColor:[color,'rgba(245,158,11,.6)','rgba(100,116,139,.2)'],borderWidth:0,hoverOffset:4}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{position:'bottom',labels:{font:{size:10},padding:8,boxWidth:8}}}}
+    });
+  }
+  charts.smD=mk('smDonut','#3b82f6');
+  charts.mbD=mk('mbDonut','#f97316');
+  charts.seoD=mk('seoDonut','#10b981');
+  charts.bar=new Chart(document.getElementById('barChart'),{
+    type:'bar',
+    data:{labels:['Social','Media','SEO'],datasets:[
+      {label:'Done',data:[0,0,0],backgroundColor:'rgba(16,185,129,.8)',borderRadius:5},
+      {label:'Hold',data:[0,0,0],backgroundColor:'rgba(245,158,11,.8)',borderRadius:5},
+      {label:'Pending',data:[7,8,8],backgroundColor:'rgba(100,116,139,.3)',borderRadius:5}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},
+      scales:{x:{stacked:true,grid:{color:'#252a38'}},y:{stacked:true,grid:{color:'#252a38'},ticks:{stepSize:1}}}}
+  });
+  charts.rad=new Chart(document.getElementById('radarChart'),{
+    type:'radar',
+    data:{labels:['Brief','Access','Audit','Plan','Design','Videos','Pub'],
+      datasets:[
+        {label:'Social',data:[0,0,0,0,0,0,0],backgroundColor:'rgba(59,130,246,.2)',borderColor:'#3b82f6',pointBackgroundColor:'#3b82f6',borderWidth:2},
+        {label:'Media',data:[0,0,0,0,0,0,0],backgroundColor:'rgba(249,115,22,.2)',borderColor:'#f97316',pointBackgroundColor:'#f97316',borderWidth:2},
+        {label:'SEO',data:[0,0,0,0,0,0,0],backgroundColor:'rgba(16,185,129,.2)',borderColor:'#10b981',pointBackgroundColor:'#10b981',borderWidth:2}
+      ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},
+      scales:{r:{grid:{color:'#252a38'},ticks:{display:false},pointLabels:{font:{size:9},color:'#94a3b8'},min:0,max:1}}}
   });
 }
-
-const smD=mkDonut('smDonut','#3b82f6');
-const mbD=mkDonut('mbDonut','#f97316');
-const seoD=mkDonut('seoDonut','#10b981');
-
-const barC=new Chart(document.getElementById('barChart'),{
-  type:'bar',
-  data:{labels:['Social','Media','SEO'],datasets:[
-    {label:'Done',data:[0,2,0],backgroundColor:'rgba(16,185,129,.8)',borderRadius:5},
-    {label:'Hold',data:[0,1,0],backgroundColor:'rgba(245,158,11,.8)',borderRadius:5},
-    {label:'Pending',data:[7,5,8],backgroundColor:'rgba(100,116,139,.3)',borderRadius:5}
-  ]},
-  options:{ responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{position:'bottom'}},
-    scales:{x:{stacked:true,grid:{color:'#252a38'}},y:{stacked:true,grid:{color:'#252a38'},ticks:{stepSize:1}}} }
-});
-
-const radC=new Chart(document.getElementById('radarChart'),{
-  type:'radar',
-  data:{labels:['Brief','Access','Audit','Plan','Design','Videos','Publish'],
-    datasets:[
-      {label:'Social',data:[0,0,0,0,0,0,0],backgroundColor:'rgba(59,130,246,.2)',borderColor:'#3b82f6',pointBackgroundColor:'#3b82f6',borderWidth:2},
-      {label:'Media',data:[1,0,0,0,1,0,0],backgroundColor:'rgba(249,115,22,.2)',borderColor:'#f97316',pointBackgroundColor:'#f97316',borderWidth:2},
-      {label:'SEO',data:[0,0,0,0,0,0,0],backgroundColor:'rgba(16,185,129,.2)',borderColor:'#10b981',pointBackgroundColor:'#10b981',borderWidth:2}
-    ]},
-  options:{ responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{position:'bottom'}},
-    scales:{r:{grid:{color:'#252a38'},ticks:{display:false},pointLabels:{font:{size:9},color:'#94a3b8'},min:0,max:1}} }
-});
 
 function getStats(sec){
   const sels=document.querySelectorAll('#'+sec+'-table tbody tr:first-child select.status-sel');
   let done=0,hold=0,pending=0;
-  sels.forEach(s=>{ if(s.value==='done')done++; else if(s.value==='hold')hold++; else pending++; });
-  return {done,hold,pending};
+  sels.forEach(s=>{if(s.value==='done')done++;else if(s.value==='hold')hold++;else pending++;});
+  return{done,hold,pending};
 }
 
 function updateCharts(){
+  if(!charts.smD) return;
   ['sm','mb','seo'].forEach((s,i)=>{
     const st=getStats(s);
-    const d=[smD,mbD,seoD][i];
-    d.data.datasets[0].data=[st.done,st.hold,st.pending];
-    d.update();
+    const d=[charts.smD,charts.mbD,charts.seoD][i];
+    d.data.datasets[0].data=[st.done,st.hold,st.pending];d.update();
   });
   const s1=getStats('sm'),s2=getStats('mb'),s3=getStats('seo');
-  barC.data.datasets[0].data=[s1.done,s2.done,s3.done];
-  barC.data.datasets[1].data=[s1.hold,s2.hold,s3.hold];
-  barC.data.datasets[2].data=[s1.pending,s2.pending,s3.pending];
-  barC.update();
+  charts.bar.data.datasets[0].data=[s1.done,s2.done,s3.done];
+  charts.bar.data.datasets[1].data=[s1.hold,s2.hold,s3.hold];
+  charts.bar.data.datasets[2].data=[s1.pending,s2.pending,s3.pending];
+  charts.bar.update();
+  charts.rad.data.datasets[0].data=[s1.done?1:0,0,0,0,0,0,0];
+  charts.rad.data.datasets[1].data=[s2.done?1:0,0,0,0,s2.done>1?1:0,0,0];
+  charts.rad.data.datasets[2].data=[s3.done?1:0,0,0,0,0,0,0];
+  charts.rad.update();
 }
 
-// ══════════════════════════════════════════════
-// EXPORT PDF
-// ══════════════════════════════════════════════
-function exportPDF() {
-  window.print();
+function destroyCharts(){
+  Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});
+  charts={};
 }
 
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // INIT
-// ══════════════════════════════════════════════
-loadAll();
-['con','sm','mb','seo'].forEach(s => calcDays(s, s+'-days', s+'-sub'));
-['sm','mb','seo'].forEach(recalc);
-updateCharts();
+// ══════════════════════════════════════════════════════════
+renderClients();
+renderTasks();
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click', function(e){
+  if(e.target===this) closeModal();
+});
 </script>
 </body>
 </html>
